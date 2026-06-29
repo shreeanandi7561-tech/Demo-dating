@@ -121,3 +121,30 @@ dependencies {
   "ksp"(libs.androidx.room.compiler)
   "ksp"(libs.moshi.kotlin.codegen)
 }
+
+afterEvaluate {
+  val srcApkPath = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk").get().asFile.absolutePath
+  val rootDestPath = file("${rootDir}/app-debug.apk").absolutePath
+  val buildOutputsDestPath = file("${rootDir}/.build-outputs/app-debug.apk").absolutePath
+  val buildOutputsDir = file("${rootDir}/.build-outputs").absolutePath
+
+  tasks.named("assembleDebug") {
+    doLast {
+      val apkFile = File(srcApkPath)
+      if (apkFile.exists()) {
+        val rootDest = File(rootDestPath)
+        val buildOutputsDestDir = File(buildOutputsDir)
+        if (!buildOutputsDestDir.exists()) {
+          buildOutputsDestDir.mkdirs()
+        }
+        val buildOutputsDest = File(buildOutputsDestPath)
+        apkFile.copyTo(rootDest, overwrite = true)
+        apkFile.copyTo(buildOutputsDest, overwrite = true)
+      }
+    }
+  }
+}
+
+
+
+
